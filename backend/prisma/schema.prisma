@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(125)
+  phone_number       String?              @db.VarChar(125)
+  username           String               @unique @db.VarChar(125)
+  password           String               @db.VarChar(125)
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @default(now())
+  roles              Role[]               @relation("roles_on_users")
+  associatedInvoices Invoice[]
+  generatedInvoices  InvoicesOnServices[]
+
+  @@map("users")
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(125)
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @default(now())
+  permissions Permission[] @relation("permissions_on_roles")
+  users       User[]       @relation("roles_on_users")
+
+  @@map("roles")
+}
+
+model Permission {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(125)
+  module     String   @db.VarChar(125)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  roles      Role[]   @relation("permissions_on_roles")
+
+  @@unique([name, module])
+  @@map("permissions")
+}
+
+model Group {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(125)
+  services   Service[]
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+
+  @@map("groups")
+}
+
+model Service {
+  id          Int                  @id @default(autoincrement())
+  name        String               @db.VarChar(125)
+  description String?              @db.LongText
+  price       Decimal
+  group       Group                @relation(fields: [group_id], references: [id])
+  group_id    Int
+  invoices    InvoicesOnServices[]
+  created_at  DateTime             @default(now())
+  updated_at  DateTime             @default(now())
+
+  @@map("services")
+}
+
+model Coupon {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(125)
+  code        String    @unique @db.VarChar(125)
+  description String?   @db.LongText
+  offer       Decimal
+  unit        String
+  expiry_date DateTime
+  invoices    Invoice[]
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now())
+
+  @@map("coupons")
+}
+
+model Invoice {
+  id              Int                  @id @default(autoincrement())
+  client_id       Int
+  discount        Decimal?
+  discount_amount Decimal?
+  discount_unit   String?
+  coupon_id       Int?
+  payment_method  String? // Cash, Card
+  notes           String?              @db.LongText
+  client          Client               @relation(fields: [client_id], references: [id])
+  coupon          Coupon?              @relation(fields: [coupon_id], references: [id])
+  cashier         User                 @relation(fields: [cashier_id], references: [id])
+  cashier_id      Int
+  services        InvoicesOnServices[]
+  extra_charges   Decimal
+  subtotal        Decimal
+  total           Decimal
+  bill_date       DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  @@map("invoices")
+}
+
+model InvoicesOnServices {
+  id         Int     @id @default(autoincrement())
+  user       User    @relation(fields: [user_id], references: [id])
+  user_id    Int
+  service    Service @relation(fields: [service_id], references: [id])
+  service_id Int
+  invoice    Invoice @relation(fields: [invoice_id], references: [id])
+  invoice_id Int
+  price      Decimal
+}
+
+model Client {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(125)
+  contact       String?   @db.VarChar(125)
+  date_of_birth DateTime?
+  gender        String?   @db.VarChar(125)
+  address       String?   @db.LongText
+  invoices      Invoice[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("clients")
+}

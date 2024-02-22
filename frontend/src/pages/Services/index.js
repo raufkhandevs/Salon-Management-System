@@ -1,0 +1,11 @@
+import Index from "./Index.jsx";
+import Create from "./Create";
+import Edit from "./Edit";
+
+const Services = {
+  Index,
+  Create,
+  Edit,
+};
+
+export default Services;

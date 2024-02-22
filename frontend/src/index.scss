@@ -1,0 +1,57 @@
+@import "~antd/dist/antd.css";
+
+$font-family-sans-serif: "Poppins";
+$blue: #211f20;
+$black: #211f20;
+$gray-900: #211f20;
+
+.bg-gold {
+  background: #b2900a;
+}
+
+.text-gold {
+  color: #b2900a;
+}
+
+.card {
+  .dropdown-toggle::after {
+    display: none;
+  }
+}
+
+.side-modal {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.2);
+  left: 0;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 10000001;
+
+  .card {
+    min-width: 60vw;
+  }
+}
+
+.form-label {
+  width: 100%;
+}
+
+.login-gradient {
+  background: #fbcb09; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom,
+    #fff,
+    #fbcb09a2
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom,
+    #fff,
+    #fbcb09a2
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+@import "~bootstrap/scss/bootstrap";
